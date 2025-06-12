@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<form th:action="@{/login}" th:object="${loginDTO}" method="post">
+    <div>
+        <label for="email">Email:</label>
+        <input type="text" id="email" th:field="*{email}">
+        <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
+    </div>
+
+    <div>
+        <label for="password">Password:</label>
+        <input type="password" id="password" th:field="*{password}">
+        <span th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></span>
+    </div>
+
+    <div th:if="${loginError}" class="error">
+        <span th:text="${loginError}"></span>
+    </div>
+
+    <button type="submit">Login</button>
+</form>
+</body>
+</html>
