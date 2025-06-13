@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${course != null and course.id != null} ? 'Edit Course' : 'Add New Course'">Course Form</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-50 min-h-screen">
+<div class="container mx-auto px-4 py-6">
+    <form th:action="${course.id != null} ? '/admin/courses/update' : '/admin/courses/save'"
+          th:object="${course}"
+          method="post"
+          enctype="multipart/form-data"
+          class="bg-white p-6 rounded-lg shadow-md space-y-4 max-w-3xl mx-auto">
+
+        <input th:field="*{id}" type="hidden" th:if="*{id != null}">
+
+        <div>
+            <label class="block mb-1 font-medium text-gray-700" for="name">Course Name</label>
+            <input th:field="*{name}" type="text" id="name" required
+                   class="w-full border border-gray-300 px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+
+        <div>
+            <label class="block mb-1 font-medium text-gray-700" for="duration">Duration (weeks)</label>
+            <input th:field="*{duration}" type="number" id="duration" min="1" required
+                   class="w-full border border-gray-300 px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+
+        <div>
+            <label class="block mb-1 font-medium text-gray-700" for="instructor">Instructor</label>
+            <input th:field="*{instructor}" type="text" id="instructor" required
+                   class="w-full border border-gray-300 px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+
+        <div>
+            <label class="block mb-1 font-medium text-gray-700" for="imageFile">Course Image</label>
+            <input th:field="*{imageFile}" type="file" id="imageFile" accept="image/*"
+                   class="w-full border border-gray-300 px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <div th:if="*{image != null}" class="mt-2">
+                <img th:src="*{image}" alt="Current Image" class="w-20 h-20 object-cover rounded">
+            </div>
+        </div>
+
+        <div class="flex justify-end space-x-2">
+            <button type="button" onclick="history.back()"
+                    class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded font-medium">
+                Cancel
+            </button>
+            <button type="submit"
+                    class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded font-medium">
+                <span th:text="*{id != null} ? 'Update Course' : 'Save Course'">Save Course</span>
+            </button>
+        </div>
+    </form>
+</div>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | RK Edu</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+
+<!-- Header -->
+<header th:replace="fragments/header" class="bg-gray-200 px-4 py-2 flex justify-between items-center">
+
+</header>
+
+<!-- Layout -->
+<div class="flex flex-1">
+
+    <aside class="w-64 bg-white shadow-lg min-h-screen">
+        <nav class="mt-6">
+            <a href="/admin/dashboard" class="flex items-center px-6 py-3 text-gray-700 hover:bg-blue-100" th:classappend="${activePage == 'dashboard'} ? 'bg-blue-600 text-white'">
+                <i class="fas fa-home mr-3"></i> Dashboard
+            </a>
+            <a href="/admin/students" class="flex items-center px-6 py-3 text-gray-700 hover:bg-blue-100" th:classappend="${activePage == 'students'} ? 'bg-blue-600 text-white'">
+                <i class="fas fa-user-graduate mr-3"></i> Students
+            </a>
+            <a href="/admin/courses" class="flex items-center px-6 py-3 text-gray-700 hover:bg-blue-100" th:classappend="${activePage == 'courses'} ? 'bg-blue-600 text-white'">
+                <i class="fas fa-book mr-3"></i> Courses
+            </a>
+            <a href="/admin/enrollments" class="flex items-center px-6 py-3 text-gray-700 hover:bg-blue-100" th:classappend="${activePage == 'enrollments'} ? 'bg-blue-600 text-white'">
+                <i class="fas fa-users mr-3"></i> Enrollments
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main content -->
+    <main class="flex-1 p-8">
+        <div th:replace="${content}"></div>
+    </main>
+</div>
+
+<!-- Footer -->
+<footer th:replace="fragments/footer" class="bg-gray-100 text-sm text-center text-gray-500 p-4">
+
+</footer>
+
+</body>
+</html>

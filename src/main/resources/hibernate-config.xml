@@ -8,12 +8,14 @@
         <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/java_web?createDatabaseIfNotExist=true</property>
         <property name="hibernate.connection.username">root</property>
         <property name="hibernate.connection.password">123456</property>
-        <property name="hibernate.dialect">org.hibernate.dialect.MySQL5Dialect</property>
+        <property name="hibernate.dialect">org.hibernate.dialect.MySQL8Dialect</property>
         <property name="show_sql">true</property>
-        <!-- update: tự gen ra bảng, cột trong db nêếu chưa có -->
+        <!-- update: tự gen edu bảng, cột trong db nêếu chưa có -->
         <!-- update: nêếu có rồi bỏ qua -->
         <property name="hbm2ddl.auto">update</property>
-        <mapping class="ra.entity.User"/>
+        <mapping class="edu.entity.User"/>
+        <mapping class="edu.entity.Course"/>
+        <mapping class="edu.entity.Enrollment"/>
 
     </session-factory>
 </hibernate-configuration>
