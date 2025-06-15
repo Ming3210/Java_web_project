@@ -5,6 +5,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,6 +23,7 @@ public class Course {
     @GeneratedValue (strategy = javax.persistence.GenerationType.IDENTITY)
     private Integer id;
 
+
     private String name;
 
     private int duration;
@@ -30,6 +34,9 @@ public class Course {
     private LocalDateTime createdAt;
 
     private String image;
+
+    @Column ( columnDefinition = "BOOLEAN DEFAULT TRUE")
+    private boolean status;
 
     @OneToMany (mappedBy = "course", cascade = CascadeType.ALL)
     private List<Enrollment> enrollments;

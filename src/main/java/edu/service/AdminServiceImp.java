@@ -22,8 +22,8 @@ public class AdminServiceImp implements AdminService{
     }
 
     @Override
-    public List<Course> paginateCourses(int page, int size) {
-        return adminRepository.paginateCourses(page, size);
+    public List<Course> paginateCourses(int page, int size, String sortBy, String order, String status, String keyword) {
+        return adminRepository.paginateCourses(page, size, sortBy, order, status, keyword);
     }
 
     @Override
@@ -39,5 +39,15 @@ public class AdminServiceImp implements AdminService{
     @Override
     public boolean editCourse(Course course) {
         return adminRepository.editCourse(course);
+    }
+
+    @Override
+    public boolean deleteCourse(int id) {
+        return adminRepository.deleteCourse(id);
+    }
+
+    @Override
+    public int countCoursesByStatusAndKeyword(String status, String keyword) {
+        return adminRepository.countCoursesByStatusAndKeyword(status, keyword);
     }
 }

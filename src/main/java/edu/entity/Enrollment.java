@@ -20,6 +20,7 @@ public class Enrollment {
     @Column(name = "registered_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDate registeredAt;
 
+    @Column(name = "status", columnDefinition = "ENUM('WAITING', 'CONFIRM', 'DENIED','CANCEL') DEFAULT 'WAITING'")
     private CourseStatus status;
 
     @ManyToOne

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import edu.entity.Course;
 
+import java.util.Collections;
 import java.util.List;
 @Repository
 public class AdminRepositoryImp implements AdminRepository{
@@ -43,21 +44,35 @@ public class AdminRepositoryImp implements AdminRepository{
     }
 
     @Override
-    public List<Course> paginateCourses(int page, int size) {
-        Session session = sessionFactory.openSession();
-        try {
-            String hql = "FROM Course";
+    public List<Course> paginateCourses(int page, int size, String sortBy, String order, String status, String keyword) {
+        try (Session session = sessionFactory.openSession()) {
+            String hql = "FROM Course WHERE 1=1";
+
+            if (!"ALL".equalsIgnoreCase(status)) {
+                hql += " AND status = :status";
+            }
+            if (keyword != null && !keyword.trim().isEmpty()) {
+                hql += " AND lower(name) LIKE :keyword";
+            }
+
+            hql += " ORDER BY " + sortBy + " " + order;
+
             Query<Course> query = session.createQuery(hql, Course.class);
+
+            if (!"ALL".equalsIgnoreCase(status)) {
+                query.setParameter("status", "ACTIVE".equalsIgnoreCase(status));
+            }
+            if (keyword != null && !keyword.trim().isEmpty()) {
+                query.setParameter("keyword", "%" + keyword.toLowerCase() + "%");
+            }
+
             query.setFirstResult((page - 1) * size);
             query.setMaxResults(size);
+
             return query.getResultList();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        } finally {
-            session.close();
         }
     }
+
 
     @Override
     public boolean saveCourse(Course course) {
@@ -98,8 +113,7 @@ public class AdminRepositoryImp implements AdminRepository{
         Transaction transaction = null;
         try {
             transaction = session.beginTransaction();
-            session.merge(course); // Thay vì update()
-            session.flush(); // Thêm flush
+            session.update(course);
             transaction.commit();
             return true;
         } catch (Exception e) {
@@ -110,6 +124,56 @@ public class AdminRepositoryImp implements AdminRepository{
             return false;
         } finally {
             session.close();
+        }
+    }
+
+    @Override
+    public boolean deleteCourse(int id) {
+        Session session = sessionFactory.openSession();
+        Transaction transaction = null;
+        try {
+            transaction = session.beginTransaction();
+            Course course = session.get(Course.class, id);
+            if (course != null) {
+                session.delete(course);
+                transaction.commit();
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            e.printStackTrace();
+            return false;
+        } finally {
+            session.close();
+        }
+    }
+
+    @Override
+    public int countCoursesByStatusAndKeyword(String status, String keyword) {
+        try (Session session = sessionFactory.openSession()) {
+            String hql = "SELECT COUNT(*) FROM Course WHERE 1=1";
+
+            if (!"ALL".equalsIgnoreCase(status)) {
+                hql += " AND status = :status";
+            }
+            if (keyword != null && !keyword.trim().isEmpty()) {
+                hql += " AND lower(name) LIKE :keyword";
+            }
+
+            Query<Long> query = session.createQuery(hql, Long.class);
+
+            if (!"ALL".equalsIgnoreCase(status)) {
+                query.setParameter("status", "ACTIVE".equalsIgnoreCase(status));
+            }
+            if (keyword != null && !keyword.trim().isEmpty()) {
+                query.setParameter("keyword", "%" + keyword.toLowerCase() + "%");
+            }
+
+            return query.uniqueResult().intValue();
         }
     }
 
