@@ -2,233 +2,272 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-    <style>
-        /* Reset và base styles */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        /* Container cho form */
-        form {
-            background: white;
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1), 0 5px 15px rgba(0, 0, 0, 0.08);
-            width: 100%;
-            max-width: 400px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        /* Hiệu ứng backdrop cho form */
-        form::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 5px;
-            background: linear-gradient(90deg, #667eea, #764ba2);
-        }
-
-        /* Styling cho các div chứa field */
-        form > div {
-            margin-bottom: 25px;
-            position: relative;
-        }
-
-        /* Labels */
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #333;
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        /* Input fields */
-        input[type="text"],
-        input[type="password"] {
-            width: 100%;
-            padding: 15px;
-            border: 2px solid #e1e8ed;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: all 0.3s ease;
-            background: #f8f9fa;
-        }
-
-        input[type="text"]:focus,
-        input[type="password"]:focus {
-            outline: none;
-            border-color: #667eea;
-            background: white;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-            transform: translateY(-2px);
-        }
-
-        /* Error messages */
-        span[th\:errors] {
-            display: block;
-            color: #e74c3c;
-            font-size: 12px;
-            margin-top: 5px;
-            font-weight: 500;
-            padding: 5px 0;
-        }
-
-        /* Login error styling */
-        .error {
-            background: #ffeaea;
-            border: 1px solid #e74c3c;
-            border-radius: 6px;
-            padding: 12px;
-            margin-bottom: 20px;
-        }
-
-        .error span {
-            color: #c0392b;
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        /* Submit button */
-        button[type="submit"] {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        button[type="submit"]:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 7px 20px rgba(102, 126, 234, 0.4);
-        }
-
-        button[type="submit"]:active {
-            transform: translateY(0);
-        }
-
-        /* Hiệu ứng ripple cho button */
-        button[type="submit"]::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.3);
-            transition: width 0.6s, height 0.6s, top 0.6s, left 0.6s;
-            transform: translate(-50%, -50%);
-            z-index: 0;
-        }
-
-        button[type="submit"]:active::before {
-            width: 300px;
-            height: 300px;
-        }
-
-        button[type="submit"] * {
-            position: relative;
-            z-index: 1;
-        }
-
-        /* Responsive design */
-        @media (max-width: 480px) {
-            form {
-                padding: 30px 20px;
-                margin: 10px;
-            }
-
-            input[type="text"],
-            input[type="password"],
-            button[type="submit"] {
-                padding: 12px;
-                font-size: 14px;
-            }
-
-            label {
-                font-size: 13px;
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In - Modern Design</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    animation: {
+                        'fade-in': 'fadeIn 0.6s ease-out',
+                        'slide-up': 'slideUp 0.6s ease-out',
+                        'pulse-slow': 'pulse 3s infinite',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' }
+                        },
+                        slideUp: {
+                            '0%': { opacity: '0', transform: 'translateY(30px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' }
+                        }
+                    }
+                }
             }
         }
-
-        /* Animation khi load trang */
-        @keyframes slideInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        form {
-            animation: slideInUp 0.6s ease-out;
-        }
-
-        input[type="text"]:hover,
-        input[type="password"]:hover {
-            border-color: #b8c7ff;
-        }
-
-        input[type="text"]:focus-visible,
-        input[type="password"]:focus-visible,
-        button[type="submit"]:focus-visible {
-            outline: 2px solid #667eea;
-            outline-offset: 2px;
-        }
-    </style>
+    </script>
 </head>
-<body>
-<form th:action="@{/login}" th:object="${loginDTO}" method="post">
-    <div>
-        <label for="email">Email:</label>
-        <input type="text" id="email" th:field="*{email}">
-        <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
-    </div>
+<body class="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-purple-800 flex items-center justify-center p-4">
+<!-- Background animated elements -->
 
-    <div>
-        <label for="password">Password:</label>
-        <input type="password" id="password" th:field="*{password}">
-        <span th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></span>
-    </div>
+<div class="absolute inset-0 overflow-hidden">
+    <div class="absolute -top-40 -right-40 w-80 h-80 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-pulse-slow"></div>
+    <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-pulse-slow animation-delay-2000"></div>
+    <div class="absolute top-40 left-40 w-80 h-80 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-pulse-slow animation-delay-4000"></div>
+</div>
 
-    <div th:if="${loginError}" class="error">
-        <span th:text="${loginError}"></span>
-    </div>
+<div class="relative z-10 w-full max-w-6xl mx-auto">
+    <div class="bg-white rounded-3xl shadow-2xl overflow-hidden backdrop-blur-sm bg-opacity-95">
+        <div class="flex flex-col lg:flex-row">
+            <!-- Left Panel - Hero Section -->
+            <div class="lg:w-1/2 bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-700 p-8 lg:p-12 flex flex-col justify-center items-center text-white relative overflow-hidden">
+                <!-- Background pattern -->
+                <div class="absolute inset-0 bg-black bg-opacity-10">
+                    <div class="absolute inset-0" style="background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.15) 1px, transparent 0); background-size: 20px 20px;"></div>
+                </div>
 
-    <button type="submit">Login</button>
-</form>
+                <div class="relative z-10 text-center animate-fade-in">
+                    <!-- Illustration placeholder -->
+                    <div class="w-48 h-32 mx-auto mb-8 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-white border-opacity-30">
+                        <div class="text-6xl">👥💼</div>
+                    </div>
+
+                    <h1 class="text-4xl lg:text-5xl font-bold mb-6 leading-tight">
+                        Join us today
+                        <span class="inline-block animate-bounce">👋</span>
+                    </h1>
+
+                    <p class="text-lg lg:text-xl opacity-90 leading-relaxed max-w-md">
+                        Clarity gives you the blocks and components you need to create a truly professional website.
+                    </p>
+
+                    <!-- Decorative elements -->
+                    <div class="mt-8 flex justify-center space-x-4">
+                        <div class="w-2 h-2 bg-white rounded-full opacity-60 animate-pulse"></div>
+                        <div class="w-2 h-2 bg-white rounded-full opacity-40 animate-pulse" style="animation-delay: 0.5s;"></div>
+                        <div class="w-2 h-2 bg-white rounded-full opacity-60 animate-pulse" style="animation-delay: 1s;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel - Login Form -->
+            <div class="lg:w-1/2 p-8 lg:p-12 bg-gray-50">
+                <div class="max-w-md mx-auto animate-slide-up">
+                    <!-- Header -->
+                    <div class="text-center mb-8">
+                        <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 mb-2">Sign in</h2>
+                        <p class="text-gray-600">Welcome back! Please sign in to your account.</p>
+                    </div>
+
+                    <!-- Login Form with Thymeleaf -->
+                    <form th:action="@{/login}" th:object="${loginDTO}" method="post" class="space-y-6">
+
+                        <!-- Email Field -->
+                        <div class="group">
+                            <label for="email" class="block text-sm font-semibold text-gray-700 mb-2 transition-colors group-focus-within:text-purple-600">
+                                Email Address
+                            </label>
+                            <div class="relative">
+                                <input
+                                        type="text"
+                                        id="email"
+                                        th:field="*{email}"
+                                        placeholder="Enter your email"
+                                        class="w-full px-4 py-4 bg-white border-2 border-gray-200 rounded-xl text-gray-700 placeholder-gray-400 transition-all duration-300 focus:border-purple-500 focus:ring-4 focus:ring-purple-100 focus:outline-none hover:border-gray-300 focus:shadow-lg focus:-translate-y-0.5"
+                                >
+                                <div class="absolute inset-y-0 right-0 flex items-center pr-4">
+                                    <svg class="w-5 h-5 text-gray-400 group-focus-within:text-purple-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <!-- Error message for email -->
+                            <span th:if="${#fields.hasErrors('email')}"
+                                  th:errors="*{email}"
+                                  class="block mt-2 text-sm text-red-600 font-medium bg-red-50 px-3 py-2 rounded-lg border border-red-200">
+                                </span>
+                        </div>
+
+                        <!-- Password Field -->
+                        <div class="group">
+                            <label for="password" class="block text-sm font-semibold text-gray-700 mb-2 transition-colors group-focus-within:text-purple-600">
+                                Password
+                            </label>
+                            <div class="relative">
+                                <input
+                                        type="password"
+                                        id="password"
+                                        th:field="*{password}"
+                                        placeholder="Enter your password"
+                                        class="w-full px-4 py-4 bg-white border-2 border-gray-200 rounded-xl text-gray-700 placeholder-gray-400 transition-all duration-300 focus:border-purple-500 focus:ring-4 focus:ring-purple-100 focus:outline-none hover:border-gray-300 focus:shadow-lg focus:-translate-y-0.5"
+                                >
+                                <div class="absolute inset-y-0 right-0 flex items-center pr-4">
+                                    <svg class="w-5 h-5 text-gray-400 group-focus-within:text-purple-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <!-- Error message for password -->
+                            <span th:if="${#fields.hasErrors('password')}"
+                                  th:errors="*{password}"
+                                  class="block mt-2 text-sm text-red-600 font-medium bg-red-50 px-3 py-2 rounded-lg border border-red-200">
+                                </span>
+                        </div>
+
+                        <!-- Login Error Message -->
+                        <div th:if="${loginError}"
+                             class="bg-red-50 border-l-4 border-red-400 p-4 rounded-lg">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </div>
+                                <div class="ml-3">
+                                    <p class="text-sm text-red-700 font-medium" th:text="${loginError}"></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Additional Options -->
+                        <div class="flex items-center justify-between text-sm">
+                            <label class="flex items-center">
+                                <input type="checkbox" class="w-4 h-4 text-purple-600 bg-gray-100 border-gray-300 rounded focus:ring-purple-500 focus:ring-2">
+                                <span class="ml-2 text-gray-600">Remember me</span>
+                            </label>
+                            <a href="#" class="text-purple-600 hover:text-purple-800 font-medium transition-colors">
+                                Forgot password?
+                            </a>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button
+                                type="submit"
+                                class="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-purple-300 active:scale-95 relative overflow-hidden group"
+                        >
+                                <span class="relative z-10 flex items-center justify-center">
+                                    <svg class="w-5 h-5 mr-2 group-hover:animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
+                                    </svg>
+                                    LOGIN
+                                </span>
+                            <!-- Ripple effect -->
+                            <div class="absolute inset-0 bg-white opacity-0 group-active:opacity-20 transition-opacity duration-150"></div>
+                        </button>
+
+                        <!-- Register Link -->
+                        <div class="text-center pt-4 border-t border-gray-200">
+                            <p class="text-gray-600">
+                                Don't have an account?
+                                <a href="register" class="text-purple-600 hover:text-purple-800 font-semibold transition-colors hover:underline">
+                                    Register here
+                                </a>
+                            </p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript for enhanced interactions -->
+<script>
+    // Add focus effects to form groups
+    document.querySelectorAll('.group input').forEach(input => {
+        input.addEventListener('focus', function() {
+            this.closest('.group').classList.add('focused');
+        });
+
+        input.addEventListener('blur', function() {
+            this.closest('.group').classList.remove('focused');
+        });
+    });
+
+    // Add loading state to submit button
+    document.querySelector('form').addEventListener('submit', function(e) {
+        const submitBtn = this.querySelector('button[type="submit"]');
+        const originalContent = submitBtn.innerHTML;
+
+        submitBtn.innerHTML = `
+                <div class="flex items-center justify-center">
+                    <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    SIGNING IN...
+                </div>
+            `;
+        submitBtn.disabled = true;
+
+        // Reset button after form submission (in real app, this would be handled by page reload/redirect)
+        setTimeout(() => {
+            submitBtn.innerHTML = originalContent;
+            submitBtn.disabled = false;
+        }, 2000);
+    });
+
+    // Add ripple effect to button
+    document.querySelector('button[type="submit"]').addEventListener('click', function(e) {
+        const ripple = document.createElement('div');
+        const rect = this.getBoundingClientRect();
+        const size = Math.max(rect.width, rect.height);
+        const x = e.clientX - rect.left - size / 2;
+        const y = e.clientY - rect.top - size / 2;
+
+        ripple.style.cssText = `
+                position: absolute;
+                width: ${size}px;
+                height: ${size}px;
+                left: ${x}px;
+                top: ${y}px;
+                background: rgba(255, 255, 255, 0.5);
+                border-radius: 50%;
+                transform: scale(0);
+                animation: ripple 0.6s linear;
+                pointer-events: none;
+            `;
+
+        this.appendChild(ripple);
+
+        setTimeout(() => {
+            ripple.remove();
+        }, 600);
+    });
+
+    // Add CSS for ripple animation
+    const style = document.createElement('style');
+    style.textContent = `
+            @keyframes ripple {
+                to {
+                    transform: scale(4);
+                    opacity: 0;
+                }
+            }
+        `;
+    document.head.appendChild(style);
+</script>
 </body>
 </html>

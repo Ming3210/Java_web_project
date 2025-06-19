@@ -52,6 +52,21 @@ public class AuthRepositoryImp implements AuthRepository{
             session.close();
         }
     }
-
+    @Override
+    public boolean existsByEmail(String email) {
+        Session session = sessionFactory.openSession();
+        try {
+            String hql = "SELECT count(u.id) FROM User u WHERE u.email = :email";
+            Long count = session.createQuery(hql, Long.class)
+                    .setParameter("email", email)
+                    .uniqueResult();
+            return count != null && count > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            session.close();
+        }
+    }
 
 }

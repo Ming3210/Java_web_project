@@ -6,17 +6,20 @@ import org.hibernate.SessionFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.thymeleaf.spring5.SpringTemplateEngine;
+import org.thymeleaf.spring5.dialect.SpringStandardDialect;
 import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring5.view.ThymeleafViewResolver;
 import org.thymeleaf.templatemode.TemplateMode;
 
 import javax.persistence.EntityManager;
+import java.util.Set;
 
 @Configuration
 @EnableWebMvc
@@ -92,18 +95,8 @@ public class AppConfig implements WebMvcConfigurer {
         filter.setForceEncoding(true);
         return filter;
     }
-
-//    @Override
-//    public void addFormatters(FormatterRegistry registry) {
-//        registry.addConverter(new Converter<String, Date>() {
-//            @Override
-//            public Date convert(String source) {
-//                try {
-//                    return new SimpleDateFormat("yyyy-MM-dd").parse(source);
-//                } catch (ParseException e) {
-//                    return null;
-//                }
-//            }
-//        });
-//    }
+    @Bean
+    public javax.validation.Validator validator() {
+        return new LocalValidatorFactoryBean();
+    }
 }

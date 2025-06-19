@@ -12,6 +12,7 @@ import edu.dto.LoginDTO;
 import edu.dto.UserDTO;
 import edu.entity.User;
 import edu.service.AuthService;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
@@ -32,7 +33,9 @@ public class AuthController {
     public String login(@Valid @ModelAttribute("loginDTO") LoginDTO loginDTO,
                         BindingResult result,
                         HttpSession session,
-                        Model model) {
+                        Model model,
+                        RedirectAttributes redirectAttributes
+                        ) {
 
         if (result.hasErrors()) {
             return "auth/login";
@@ -40,17 +43,21 @@ public class AuthController {
 
         User loggedInUser = authService.login(loginDTO.getEmail(), loginDTO.getPassword());
 
-        if (loggedInUser != null) {
-            session.setAttribute("email", loggedInUser.getEmail());
-            session.setAttribute("role", loggedInUser.getRole());
+        if (loggedInUser != null && loggedInUser.isStatus()) {
+            session.setMaxInactiveInterval(3600);
+            session.setAttribute("user", loggedInUser);
 
             if ("ADMIN".equalsIgnoreCase(loggedInUser.getRole())) {
                 return "redirect:/admin/dashboard";
             } else {
+                redirectAttributes.addFlashAttribute("successMessage", true);
                 return "redirect:/";
             }
         } else {
             model.addAttribute("loginError", "Email hoặc mật khẩu không đúng");
+            if (loggedInUser != null && !loggedInUser.isStatus()) {
+                model.addAttribute("loginError", "Tài khoản của bạn đã bị khóa");
+            }
             return "auth/login";
         }
     }
@@ -96,5 +103,11 @@ public class AuthController {
 
             return "auth/register";
         }
+    }
+
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+        session.invalidate();
+        return "redirect:/login";
     }
 }

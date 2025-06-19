@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>History Enrollment - RIKEIEdu</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50 min-h-screen">
+
+<!-- Header -->
+<header class="bg-white shadow-sm border-b">
+    <div class="max-w-7xl mx-auto px-4 py-3">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-8">
+                <div class="flex items-center">
+                    <span class="text-xl font-bold text-blue-600">RIKEI</span>
+                    <span class="text-xl font-bold text-orange-500">Edu</span>
+                    <i class="fas fa-graduation-cap text-blue-600 ml-1"></i>
+                </div>
+                <nav class="hidden md:flex space-x-6">
+                    <a class="text-gray-600 font-medium hover:text-blue-600 transition-colors" href="/">List Course</a>
+                    <a class="text-blue-500 font-medium" href="/enrollment">Enrollments</a>
+                    <a class="text-gray-600 font-medium hover:text-blue-600 transition-colors"
+                       href="/profile">Profile</a>
+                </nav>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="flex items-center space-x-3">
+                    <div class="relative">
+                        <i class="fas fa-shopping-cart text-gray-600 text-lg"></i>
+                        <span class="absolute -top-2 -right-2 bg-blue-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">2</span>
+                    </div>
+                    <i class="fas fa-bell text-gray-600 text-lg"></i>
+                    <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
+                        <i class="fas fa-user text-gray-600 text-sm"></i>
+                    </div>
+                    <a class="text-gray-600 hover:text-blue-600 font-medium transition-colors" href="/logout">Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Main Content -->
+<main class="max-w-7xl mx-auto px-4 py-8">
+    <div class="text-center mb-8">
+        <h1 class="text-4xl font-bold text-yellow-500 mb-8">History Enrollment</h1>
+    </div>
+
+    <!-- Search & Filter Form -->
+    <form action="/enrollment" class="flex items-center gap-4 mb-6" id="filterForm" method="get">
+        <input name="page" th:value="${currentPage}" type="hidden">
+        <input name="size" th:value="${size}" type="hidden">
+
+        <!-- Status Filter -->
+        <select class="border border-gray-300 rounded-lg px-3 py-2 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                name="status"
+                onchange="this.form.submit();">
+            <option value="">All Status</option>
+            <option th:selected="${status == 'WAITING'}" value="WAITING">Waiting</option>
+            <option th:selected="${status == 'CONFIRM'}" value="CONFIRM">Confirm</option>
+            <option th:selected="${status == 'DENIED'}" value="DENIED">Denied</option>
+            <option th:selected="${status == 'CANCEL'}" value="CANCEL">Cancel</option>
+        </select>
+
+        <!-- Search Input -->
+        <div class="relative">
+            <input class="border border-gray-300 rounded-lg px-4 py-2 pr-10 w-64 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                   name="keyword"
+                   placeholder="Search by course name"
+                   th:value="${keyword}"
+                   type="text">
+            <i class="fas fa-search absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+        </div>
+
+        <!-- Submit Button -->
+        <button class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+                type="submit">
+            Search
+        </button>
+    </form>
+
+    <!-- Enrollment Table -->
+    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+        <table class="w-full">
+            <thead class="bg-gray-50 border-b">
+            <tr>
+                <th class="px-6 py-4 text-left text-sm font-medium text-gray-600">Course ID</th>
+                <th class="px-6 py-4 text-left text-sm font-medium text-gray-600">Course Name</th>
+                <th class="px-6 py-4 text-left text-sm font-medium text-gray-600">Duration (Hour)</th>
+                <th class="px-6 py-4 text-left text-sm font-medium text-gray-600">Instructor</th>
+                <th class="px-6 py-4 text-left text-sm font-medium text-gray-600">Image</th>
+                <th class="px-6 py-4 text-left text-sm font-medium text-gray-600">Created Date</th>
+                <th class="px-6 py-4 text-left text-sm font-medium text-gray-600">Status</th>
+                <th class="px-6 py-4 text-left text-sm font-medium text-gray-600">Action</th>
+            </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+            <tr class="hover:bg-gray-50" th:each="enrollment : ${enrollments}">
+                <td class="px-6 py-4 text-sm font-medium text-gray-900" th:text="${enrollment.id}"></td>
+                <td class="px-6 py-4 text-sm text-gray-900" th:text="${enrollment.course.name}"></td>
+                <td class="px-6 py-4 text-sm text-gray-900" th:text="${enrollment.course.duration}"></td>
+                <td class="px-6 py-4 text-sm text-gray-900" th:text="${enrollment.course.instructor}"></td>
+                <td class="px-6 py-3">
+                    <img alt="Course Image" class="w-16 h-16 object-cover rounded"
+                         th:src="@{${enrollment.course.image}}">
+                </td>
+                <td class="px-6 py-4 text-sm text-gray-900" th:text="${enrollment.course.createdAt}"></td>
+                <td class="px-6 py-4">
+                  <span th:classappend="${enrollment.status.name() == 'WAITING' ? '1 inline-flex items-center px-3 py-1 rounded-full text-xs font-medium  text-yellow-800' :
+                                     (enrollment.status.name() == 'CONFIRM' ? '2 inline-flex items-center px-3 py-1 rounded-full text-xs font-medium  text-green-800' :
+                                     (enrollment.status.name() == 'DENIED' ? '4 inline-flex items-center px-3 py-1 rounded-full text-xs font-medium  text-red-800' :
+                                     (enrollment.status.name() == 'CANCEL' ? ' 7 inline-flex items-center px-3 py-1 rounded-full text-xs font-medium  text-gray-800' :
+                                     '77 inline-flex items-center px-3 py-1 rounded-full text-xs font-medium')))}"
+                        th:text="${enrollment.status}">
+
+                  </span>
+                </td>
+                <td class="px-6 py-4">
+                    <button class="bg-orange-400 hover:bg-orange-500 text-white px-3 py-1 rounded text-xs font-medium transition-colors"
+                            th:if="${enrollment.status.name() == 'WAITING'}"
+                            th:onclick="'showDeleteModal(' + ${enrollment.id} + ')'">
+                        CANCEL
+                    </button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <!-- Pagination -->
+        <div class="flex justify-center mt-6 space-x-2">
+            <a class="px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded text-sm text-gray-700"
+               th:href="@{/enrollment(page=${currentPage - 1}, size=${size},status=${status})}"
+               th:if="${currentPage > 1}">
+                Previous
+            </a>
+
+            <span th:each="i : ${#numbers.sequence(1, totalPages)}">
+            <a th:class="${i == currentPage} ? 'px-3 py-1 bg-blue-500 text-white rounded' : 'px-3 py-1 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded'"
+               th:href="@{/enrollment(page=${i}, size=${size},status=${status})}"
+               th:text="${i}">
+            </a>
+        </span>
+
+            <a class="px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded text-sm text-gray-700"
+               th:href="@{/enrollment(page=${currentPage + 1}, size=${size},status=${status})}"
+               th:if="${currentPage < totalPages}">
+                Next
+            </a>
+        </div>
+    </div>
+</main>
+
+<!-- Delete Confirmation Modal -->
+<div class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center" id="deleteModal">
+    <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+        <div class="p-6">
+            <!-- Modal Header -->
+            <div class="flex items-center mb-4">
+                <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center mr-3">
+                    <i class="fas fa-exclamation-triangle text-red-500"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900">Xác nhận</h3>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="mb-6">
+                <p class="text-gray-600 mb-2">Bạn có chắc chắn muốn cập nhật phiếu đăng ký này không?</p>
+                <p class="text-sm text-gray-500">
+                </p>
+            </div>
+
+            <div class="flex justify-end space-x-3">
+                <button class="px-4 py-2 text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors"
+                        onclick="hideDeleteModal()"
+                        type="button">
+                    Hủy
+                </button>
+                <button class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium transition-colors"
+                        id="confirmDelete"
+                        type="button">
+                    OK
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentEnrollmentId = null;
+
+    function showDeleteModal(enrollmentId) {
+        currentEnrollmentId = enrollmentId;
+        document.getElementById('deleteModal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function hideDeleteModal() {
+        document.getElementById('deleteModal').classList.add('hidden');
+        document.body.style.overflow = 'auto';
+        currentEnrollmentId = null;
+    }
+
+    document.getElementById('confirmDelete').addEventListener('click', function () {
+        if (currentEnrollmentId) {
+            window.location.href = `/enrollment/cancel/${currentEnrollmentId}`;
+        }
+    });
+
+    document.getElementById('deleteModal').addEventListener('click', function (e) {
+        if (e.target === this) {
+            hideDeleteModal();
+        }
+    });
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && !document.getElementById('deleteModal').classList.contains('hidden')) {
+            hideDeleteModal();
+        }
+    });
+</script>
+</body>
+</html>

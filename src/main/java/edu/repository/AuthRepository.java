@@ -7,4 +7,7 @@ public interface AuthRepository {
 
     User login(String email, String password);
 
+    boolean existsByEmail(String email);
+
+
 }

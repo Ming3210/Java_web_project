@@ -30,12 +30,11 @@ public class Course {
 
     private String instructor;
 
-    @Column(columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
-    private LocalDateTime createdAt;
+    private LocalDate createdAt;
 
     private String image;
 
-    @Column ( columnDefinition = "BOOLEAN DEFAULT TRUE")
+    @Column (nullable = false, columnDefinition = "BOOLEAN DEFAULT(1)")
     private boolean status;
 
     @OneToMany (mappedBy = "course", cascade = CascadeType.ALL)

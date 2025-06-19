@@ -22,20 +22,23 @@ public class CourseDTO {
     @Size(max = 100, message = "Course name must be less than 100 characters")
     private String name;
 
-    @NotNull(message = "Duration is required")
     @Min( value = 1, message = "Duration must be at least 1 hour")
-    private int duration;
+    @NotNull(message = "Duration is required")
+    private Integer duration;
 
 
     @NotBlank (message = "Instructor name is required")
     private String instructor;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime createdAt;
+    @DateTimeFormat(pattern = "dd/MM/yyyy")
+    private LocalDate createdAt;
 
     private boolean status;
 
     private String image;
+    private String createdAtFormatted;
+
+    private int totalStudents;
 
     private MultipartFile imageFile;
 }

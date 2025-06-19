@@ -84,7 +84,7 @@
             <td class="px-6 py-3" th:text="${course.name}"></td>
             <td class="px-6 py-3" th:text="${course.duration}"></td>
             <td class="px-6 py-3" th:text="${course.instructor}"></td>
-            <td class="px-6 py-3" th:text="${course.createdAt}"></td>
+            <td class="px-6 py-3 font-bold" th:text="${course.createdAtFormatted}"></td>
             <td class="px-6 py-3">
                 <img th:src="${course.image}" alt="Course Image" class="w-16 h-16 object-cover rounded">
             </td>
@@ -107,20 +107,20 @@
     <!-- Pagination -->
     <div class="flex justify-center mt-6 space-x-2">
         <a th:if="${currentPage > 1}"
-           th:href="@{/admin/courses(page=${currentPage - 1}, size=${size}, sortBy=${sortBy}, order=${order})}"
+           th:href="@{/admin/courses(page=${currentPage - 1}, size=${size},status=${status}, sortBy=${sortBy}, order=${order})}"
            class="px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded text-sm text-gray-700">
             Previous
         </a>
 
         <span th:each="i : ${#numbers.sequence(1, totalPages)}">
-            <a th:href="@{/admin/courses(page=${i}, size=${size}, sortBy=${sortBy}, order=${order})}"
+            <a th:href="@{/admin/courses(page=${i}, size=${size}, sortBy=${sortBy},status=${status}, order=${order})}"
                th:text="${i}"
                th:class="${i == currentPage} ? 'px-3 py-1 bg-blue-500 text-white rounded' : 'px-3 py-1 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded'">
             </a>
         </span>
 
         <a th:if="${currentPage < totalPages}"
-           th:href="@{/admin/courses(page=${currentPage + 1}, size=${size}, sortBy=${sortBy}, order=${order})}"
+           th:href="@{/admin/courses(page=${currentPage + 1}, size=${size}, sortBy=${sortBy},status=${status}, order=${order})}"
            class="px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded text-sm text-gray-700">
             Next
         </a>

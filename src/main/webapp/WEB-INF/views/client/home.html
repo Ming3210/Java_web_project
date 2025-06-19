@@ -1,15 +1,336 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>List Course - RIKEIEdu</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+
 </head>
-<body>
-<h1>Home Page</h1>
-<a href="/login">Login</a>
-<a href="/register">Register</a>
+<body class="bg-gray-50 min-h-screen">
+<!-- Header -->
+<header class="bg-white shadow-sm border-b">
+    <div class="max-w-7xl mx-auto px-4 py-3">
+        <div class="flex items-center justify-between">
+            <!-- Logo and Navigation -->
+            <div class="flex items-center space-x-8">
+                <div class="flex items-center">
+                    <span class="text-xl font-bold text-blue-600">RIKEI</span>
+                    <span class="text-xl font-bold text-orange-500">Edu</span>
+                    <i class="fas fa-graduation-cap text-blue-600 ml-1"></i>
+                </div>
+                <nav class="hidden md:flex space-x-6">
+                    <a href="/" class="text-blue-500 font-medium hover:text-blue-600 transition-colors">List Course</a>
+                    <a href="/enrollment" class="text-gray-600 font-medium hover:text-blue-600 transition-colors">Enrollments</a>
+                    <a href="/profile" class="text-gray-600 font-medium hover:text-blue-600 transition-colors">Profile</a>
+                </nav>
+            </div>
+
+            <!-- User Section -->
+            <div class="flex items-center space-x-4">
+                <div th:if="${session.user == null}" class="flex space-x-4">
+                    <a href="/register" class="text-blue-500 hover:text-blue-600 font-medium transition-colors">Register</a>
+                    <a href="/login" class="text-blue-500 hover:text-blue-600 font-medium transition-colors">Login</a>
+                </div>
+
+                <div th:if="${session.user != null}" class="flex items-center space-x-3">
+                    <i class="fas fa-shopping-cart text-gray-600 text-lg"></i>
+                    <i class="fas fa-bell text-gray-600 text-lg"></i>
+                    <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
+                        <i class="fas fa-user text-gray-600 text-sm"></i>
+                    </div>
+                    <a href="/logout" class="text-gray-600 hover:text-blue-600 font-medium transition-colors">Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Main Content -->
+<main class="max-w-7xl mx-auto px-4 py-8">
+    <!-- Page Title -->
+    <div class="text-center mb-8">
+        <h1 class="text-4xl font-bold text-yellow-500 mb-8">List Course</h1>
+
+        <!-- Alert Messages -->
+        <div th:if="${error}" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4 max-w-md mx-auto" role="alert">
+            <span class="block sm:inline" th:text="${error}"></span>
+        </div>
+        <div th:if="${success}" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4 max-w-md mx-auto" role="alert">
+            <span class="block sm:inline" th:text="${success}"></span>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="flex justify-center mb-8">
+            <div class="relative max-w-md w-full">
+                <input type="text"
+                       placeholder="search course by name"
+                       class="w-full px-4 py-3 pr-20 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <button class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded font-medium transition-colors">
+                    Search
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Course Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-8">
+        <!-- Sample Course Cards (replace with Thymeleaf loop) -->
+        <th:block th:each="course : ${courses}">
+            <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
+                <!-- Course Image -->
+                <div class="relative h-40">
+                    <div th:if="${course.image}" class="h-full overflow-hidden">
+                        <img th:src="@{${course.image}}" th:alt="${course.name}" class="w-full h-full object-cover">
+                    </div>
+                    <div th:unless="${course.image}" class="bg-gradient-to-r from-red-500 to-orange-400 h-full flex flex-col justify-center items-center text-white relative">
+                        <div class="absolute top-2 left-2 bg-white text-xs px-2 py-1 rounded text-gray-800 font-medium">
+                            RIKEIEdu
+                        </div>
+                        <div class="text-center px-4">
+                            <div class="text-xs font-medium mb-1">Thang tin chi tiết về</div>
+                            <div class="text-sm font-bold mb-1">KHÓA HỌC LẬP TRÌNH</div>
+                            <div class="text-lg font-bold" th:text="${course.name}">RIKKEI ACADEMY</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Course Info -->
+                <div class="p-4">
+                    <h3 class="font-bold text-red-500 text-sm mb-1" th:text="${course.name}">Basic Web Programming</h3>
+                    <p class="text-green-600 text-xs mb-3">Let's explore</p>
+
+                    <div class="text-xs text-gray-600 mb-4 space-y-1">
+                        <div>Duration: <span th:text="${course.duration}">120</span> hour</div>
+                        <div>Instructor: <span th:text="${course.instructor}">John Smith</span></div>
+                    </div>
+
+                    <!-- Register Button -->
+                    <th:block th:if="${!#lists.contains(enrolledCourseIds, course.id)}">
+                        <button type="button"
+                                class="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg text-sm font-medium transition-colors register-btn flex items-center justify-center"
+                                th:data-course-id="${course.id}"
+                                th:data-course-name="${course.name}">
+                            Registry <i class="fas fa-arrow-right ml-2"></i>
+                        </button>
+                    </th:block>
+
+                    <div th:if="${#lists.contains(enrolledCourseIds, course.id)}"
+                         class="w-full bg-green-500 text-white py-2 rounded-lg text-sm font-medium text-center">
+                        Registered
+                    </div>
+                </div>
+            </div>
+        </th:block>
+    </div>
+
+    <!-- Empty State -->
+    <div th:if="${#lists.isEmpty(courses)}" class="text-center py-12">
+        <div class="text-gray-500 text-lg mb-4">
+            <i class="fas fa-book-open text-4xl mb-4"></i>
+            <div>No courses available at the moment</div>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="flex justify-center">
+        <nav class="flex items-center space-x-1">
+            <a th:if="${currentPage > 1}"
+               th:href="@{/(page=${currentPage - 1}, size=${size})}"
+               class="px-3 py-2 text-gray-500 hover:text-gray-700 transition-colors">
+                <i class="fas fa-chevron-left"></i>
+            </a>
+
+            <span th:each="i : ${#numbers.sequence(1, totalPages)}">
+                    <a th:href="@{/(page=${i}, size=${size})}"
+                       th:text="${i}"
+                       th:class="${i == currentPage} ? 'px-4 py-2 bg-blue-500 text-white rounded-lg font-medium' : 'px-4 py-2 text-gray-600 hover:text-blue-500 transition-colors'">
+                    </a>
+                </span>
+
+            <a th:if="${currentPage < totalPages}"
+               th:href="@{/(page=${currentPage + 1}, size=${size})}"
+               class="px-3 py-2 text-gray-500 hover:text-gray-700 transition-colors">
+                <i class="fas fa-chevron-right"></i>
+            </a>
+        </nav>
+    </div>
+</main>
+
+<!-- Registration Modal -->
+<div id="registrationModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-xl shadow-2xl max-w-md w-full mx-4 transform transition-all duration-300 scale-95 opacity-0">
+        <!-- Modal Header -->
+        <div class="flex items-center justify-between p-6 border-b border-gray-200">
+            <div class="flex items-center">
+                <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                    <i class="fas fa-question-circle text-blue-600 text-lg"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900">Xác nhận</h3>
+            </div>
+            <button id="closeModal" class="text-gray-400 hover:text-gray-600 transition-colors">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+
+        <!-- Modal Body -->
+        <div class="p-6">
+            <p class="text-gray-600 mb-4">
+                Bạn có chắc chắn muốn đăng ký khóa học
+                <span id="modalCourseName" class="font-semibold text-blue-600">Data Science with Python</span>
+                không?
+            </p>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="flex justify-end space-x-3 p-6 bg-gray-50 rounded-b-xl">
+            <button id="cancelRegistration" class="px-4 py-2 text-gray-600 hover:text-gray-800 font-medium transition-colors">
+                Hủy
+            </button>
+            <button id="confirmRegistration" class="px-6 py-2 bg-red-500 hover:bg-red-600 text-white font-medium rounded-lg transition-colors">
+                OK
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Hidden Form -->
+<form id="registrationForm" th:action="@{/enroll}" method="post" style="display: none;">
+    <input type="hidden" name="courseId" id="selectedCourseId" />
+</form>
+
+
+<script>
+    function debounce(func, delay) {
+        let timeout;
+        return function (...args) {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(this, args), delay);
+        };
+    }
+
+    function performSearch() {
+        const searchTerm = document.querySelector('input[type="text"]').value.toLowerCase();
+        const courseCards = document.querySelectorAll('.grid > div');
+
+        courseCards.forEach(card => {
+            const courseName = card.querySelector('h3').textContent.toLowerCase();
+            if (courseName.includes(searchTerm) || searchTerm === '') {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+
+    document.querySelector('input[type="text"]').addEventListener('input', debounce(performSearch, 300));
+
+    document.querySelector('input[type="text"]').addEventListener('input', function () {
+        if (this.value === '') {
+            const courseCards = document.querySelectorAll('.grid > div');
+            courseCards.forEach(card => {
+                card.style.display = 'block';
+            });
+        }
+    });
+
+    // Modal functionality
+    const modal = document.getElementById('registrationModal');
+    const modalContent = modal.querySelector('.bg-white');
+    const closeModalBtn = document.getElementById('closeModal');
+    const cancelBtn = document.getElementById('cancelRegistration');
+    const confirmBtn = document.getElementById('confirmRegistration');
+    const registrationForm = document.getElementById('registrationForm');
+    const selectedCourseIdInput = document.getElementById('selectedCourseId');
+
+    let currentCourseId = null;
+
+    // Show modal
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('register-btn') || e.target.closest('.register-btn')) {
+            const btn = e.target.classList.contains('register-btn') ? e.target : e.target.closest('.register-btn');
+
+            currentCourseId = btn.dataset.courseId;
+            const courseName = btn.dataset.courseName;
+
+            document.getElementById('modalCourseName').textContent = courseName;
+
+            // Show modal with animation
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modalContent.classList.remove('scale-95', 'opacity-0');
+                modalContent.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+    });
+
+    // Close modal function
+    function closeModal() {
+        modalContent.classList.remove('scale-100', 'opacity-100');
+        modalContent.classList.add('scale-95', 'opacity-0');
+        setTimeout(() => {
+            modal.classList.add('hidden');
+        }, 300);
+        currentCourseId = null;
+    }
+
+    // Modal event listeners
+    closeModalBtn.addEventListener('click', closeModal);
+    cancelBtn.addEventListener('click', closeModal);
+
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            closeModal();
+        }
+    });
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+            closeModal();
+        }
+    });
+
+    // Confirm registration
+    confirmBtn.addEventListener('click', function() {
+        if (currentCourseId) {
+            selectedCourseIdInput.value = currentCourseId;
+            registrationForm.submit();
+        }
+    });
+
+
+
+</script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script th:if="${successMessage}">
+    setTimeout(() => {
+        Swal.fire({
+            toast: true,
+            title: "Log in success",
+            position: "bottom-end",
+            showConfirmButton: false,
+            timer: 2500,
+            background: "#c7ffd3",
+            color: "#106b21",
+            backdrop: false,
+            showClass: {
+                popup: `
+        animate__animated
+        animate__backInRight
+        animate__faster
+      `
+            },
+            hideClass: {
+                popup: `
+        animate__animated
+        animate__backOutLeft
+        animate__faster
+      `
+            }
+        });
+    }, 100);
+</script>
 </body>
 </html>

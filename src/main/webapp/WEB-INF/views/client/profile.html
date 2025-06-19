@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+
+<div class="max-w-3xl mx-auto p-8">
+    <h1 class="text-4xl font-bold text-yellow-500 text-center mb-8">My Profile</h1>
+
+    <form th:object="${user}" method="post" action="/profile/update"
+          class="bg-white p-8 rounded shadow border border-blue-300">
+
+        <h2 class="text-lg font-semibold mb-6">Change Information</h2>
+
+        <!-- Flash messages for success/error -->
+        <div th:if="${success}" class="bg-green-100 text-green-700 px-4 py-3 rounded mb-4">
+            <span th:text="${success}"></span>
+        </div>
+
+        <div th:if="${error}" class="bg-red-100 text-red-700 px-4 py-3 rounded mb-4">
+            <span th:text="${error}"></span>
+        </div>
+
+        <!-- Form validation errors - MOVED INSIDE FORM -->
+        <div th:if="${#fields.hasErrors()}" class="bg-red-100 text-red-700 px-4 py-3 rounded mb-4">
+            <ul>
+                <li th:each="err : ${#fields.errors('*')}" th:text="${err}"></li>
+            </ul>
+        </div>
+
+        <div class="mb-4">
+            <label class="block font-medium">Full Name <span class="text-red-500">*</span></label>
+            <input th:field="*{username}" type="text"
+                   class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+                   placeholder="Nguyen Van A"/>
+            <p th:if="${#fields.hasErrors('username')}" th:errors="*{username}" class="text-sm text-red-600"></p>
+        </div>
+
+        <div class="mb-4">
+            <label class="block font-medium">Phone <span class="text-red-500">*</span></label>
+            <input th:field="*{phone}" type="text"
+                   class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+                   placeholder="0367501562"/>
+            <p th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}" class="text-sm text-red-600"></p>
+        </div>
+
+        <div class="mb-4">
+            <label class="block font-medium">Email <span class="text-red-500">*</span></label>
+            <input th:field="*{email}" type="email"
+                   class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+                   placeholder="example@gmail.com"/>
+            <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="text-sm text-red-600"></p>
+        </div>
+
+        <div class="mb-4">
+            <label class="block font-medium">Gender <span class="text-red-500">*</span></label>
+            <select th:field="*{gender}"
+                    class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300">
+                <option th:value="true">Male</option>
+                <option th:value="false">Female</option>
+            </select>
+            <p th:if="${#fields.hasErrors('gender')}" th:errors="*{gender}" class="text-sm text-red-600"></p>
+        </div>
+
+        <div class="mb-4">
+            <label class="block font-medium">Date of Birth <span class="text-red-500">*</span></label>
+            <input th:field="*{dob}" type="date"
+                   class="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"/>
+            <p th:if="${#fields.hasErrors('dob')}" th:errors="*{dob}" class="text-sm text-red-600"></p>
+        </div>
+
+        <div class="text-center space-x-4">
+            <button type="submit"
+                    class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded font-medium">
+                Save
+            </button>
+            <button type="button"
+                    onclick="openPasswordModal()"
+                    class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded font-medium">
+                Change Password
+            </button>
+        </div>
+    </form>
+</div>
+
+
+<div id="passwordModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden flex items-center justify-center z-50">
+    <div class="bg-white p-8 rounded-lg shadow-lg max-w-md w-full mx-4">
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="text-xl font-semibold">Change Password</h3>
+            <button onclick="closePasswordModal()" class="text-gray-400 hover:text-gray-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+
+        <form id="passwordForm" action="/profile/change-password" method="post">
+            <div class="mb-4">
+                <label class="block font-medium mb-2 text-gray-700">Old Password <span class="text-red-500">*</span></label>
+                <input type="password" id="currentPassword" name="currentPassword"
+                       class="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                       placeholder="Enter current password"/>
+                <div id="currentPasswordError" class="text-red-500 text-sm mt-1 hidden"></div>
+            </div>
+
+            <div class="mb-4">
+                <label class="block font-medium mb-2 text-gray-700">New Password <span class="text-red-500">*</span></label>
+                <input type="password" id="newPassword" name="newPassword"
+                       class="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                       placeholder="Enter new password"/>
+                <div id="newPasswordError" class="text-red-500 text-sm mt-1 hidden"></div>
+            </div>
+
+            <div class="mb-6">
+                <label class="block font-medium mb-2 text-gray-700">Confirm New Password <span class="text-red-500">*</span></label>
+                <input type="password" id="confirmPassword" name="confirmPassword"
+                       class="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                       placeholder="Confirm new password"/>
+                <div id="confirmPasswordError" class="text-red-500 text-sm mt-1 hidden"></div>
+            </div>
+
+            <div class="flex justify-end space-x-3">
+                <button type="button" onclick="closePasswordModal()"
+                        class="px-6 py-2 text-gray-600 border border-gray-300 rounded hover:bg-gray-50">
+                    Cancel
+                </button>
+                <button type="submit" onclick="return validatePasswordForm()"
+                        class="px-6 py-2 bg-red-600 text-white rounded hover:bg-red-700">
+                    Save
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openPasswordModal() {
+        document.getElementById('passwordModal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+        clearPasswordErrors();
+    }
+
+    function closePasswordModal() {
+        document.getElementById('passwordModal').classList.add('hidden');
+        document.body.style.overflow = 'auto';
+        document.getElementById('passwordForm').reset();
+        clearPasswordErrors();
+    }
+
+    function clearPasswordErrors() {
+        document.getElementById('currentPasswordError').classList.add('hidden');
+        document.getElementById('newPasswordError').classList.add('hidden');
+        document.getElementById('confirmPasswordError').classList.add('hidden');
+    }
+
+    function showError(fieldId, message) {
+        const errorElement = document.getElementById(fieldId + 'Error');
+        errorElement.textContent = message;
+        errorElement.classList.remove('hidden');
+    }
+
+    function hideError(fieldId) {
+        document.getElementById(fieldId + 'Error').classList.add('hidden');
+    }
+
+    function validateNewPassword() {
+        const newPassword = document.getElementById('newPassword').value;
+
+        if (newPassword.length > 0 && newPassword.length < 6) {
+            showError('newPassword', 'Password must be at least 6 characters long');
+            return false;
+        } else if (newPassword.length >= 6) {
+            hideError('newPassword');
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            if (confirmPassword.length > 0) {
+                validateConfirmPassword();
+            }
+            return true;
+        }
+        return true;
+    }
+
+    function validateConfirmPassword() {
+        const newPassword = document.getElementById('newPassword').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+
+        if (confirmPassword.length > 0 && newPassword !== confirmPassword) {
+            showError('confirmPassword', 'Confirm password not match');
+            return false;
+        } else if (confirmPassword.length > 0 && newPassword === confirmPassword) {
+            hideError('confirmPassword');
+            return true;
+        }
+        return true;
+    }
+
+    function validatePasswordForm() {
+        const currentPassword = document.getElementById('currentPassword').value;
+        const newPassword = document.getElementById('newPassword').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+
+        let isValid = true;
+
+        clearPasswordErrors();
+
+        if (!currentPassword.trim()) {
+            showError('currentPassword', 'Current password is required');
+            isValid = false;
+        }
+
+        if (!newPassword.trim()) {
+            showError('newPassword', 'New password is required');
+            isValid = false;
+        } else if (newPassword.length < 6) {
+            showError('newPassword', 'Password must be at least 6 characters long');
+            isValid = false;
+        }
+
+        if (!confirmPassword.trim()) {
+            showError('confirmPassword', 'Confirm password is required');
+            isValid = false;
+        } else if (newPassword !== confirmPassword) {
+            showError('confirmPassword', 'Confirm password not match');
+            isValid = false;
+        }
+
+        if (currentPassword === newPassword && currentPassword.trim()) {
+            showError('newPassword', 'New password must be different from current password');
+            isValid = false;
+        }
+
+        return isValid;
+    }
+
+    document.getElementById('passwordModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closePasswordModal();
+        }
+    });
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closePasswordModal();
+        }
+    });
+
+    window.addEventListener('DOMContentLoaded', function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const passwordError = urlParams.get('passwordError');
+
+        if (passwordError) {
+            openPasswordModal();
+            if (passwordError === 'incorrect') {
+                showError('currentPassword', 'Old password is incorrect');
+            } else if (passwordError === 'mismatch') {
+                showError('confirmPassword', 'Confirm password not match');
+            }
+        }
+    });
+</script>
+
+</body>
+</html>

@@ -6,4 +6,7 @@ public interface AuthService {
     boolean register(User user);
 
     User login(String email, String password);
+
+    boolean existsByEmail(String email);
+
 }

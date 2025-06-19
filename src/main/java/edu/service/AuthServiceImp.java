@@ -19,4 +19,9 @@ public class AuthServiceImp implements AuthService{
     public User login(String email, String password) {
         return authRepository.login(email, password);
     }
+
+    @Override
+    public boolean existsByEmail(String email) {
+        return authRepository.existsByEmail(email);
+    }
 }

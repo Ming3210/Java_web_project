@@ -2,6 +2,7 @@ package edu.dto;
 
 import edu.entity.Course;
 import edu.entity.User;
+import edu.utils.CourseStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,4 +17,6 @@ public class EnrollmentDTO {
     private LocalDate registeredAt;
     private User user;
     private Course course;
+    private CourseStatus status;
+
 }
