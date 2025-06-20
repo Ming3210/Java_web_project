@@ -7,10 +7,53 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 font-sans">
+<header class="bg-white shadow-sm border-b">
+    <div class="max-w-7xl mx-auto px-4 py-3">
+        <div class="flex items-center justify-between">
+            <!-- Logo and Navigation -->
+            <div class="flex items-center space-x-8">
+                <div class="flex items-center">
+                    <span class="text-xl font-bold text-blue-600">RIKEI</span>
+                    <span class="text-xl font-bold text-orange-500">Edu</span>
+                    <i class="fas fa-graduation-cap text-blue-600 ml-1"></i>
+                </div>
+                <nav class="hidden md:flex space-x-6">
+                    <a href="/" class="text-gray-600 font-medium hover:text-blue-600 transition-colors">List Course</a>
+                    <a href="/enrollment" class="text-gray-600 font-medium hover:text-blue-600 transition-colors">Enrollments</a>
+                    <a href="/profile" class="text-blue-500 font-medium hover:text-blue-600 transition-colors">Profile</a>
+                </nav>
+            </div>
+
+            <!-- User Section -->
+            <div class="flex items-center space-x-4">
+                <div th:if="${session.user == null}" class="flex space-x-4">
+                    <a href="/register" class="text-blue-500 hover:text-blue-600 font-medium transition-colors">Register</a>
+                    <a href="/login" class="text-blue-500 hover:text-blue-600 font-medium transition-colors">Login</a>
+                </div>
+
+                <div th:if="${session.user != null}" class="flex items-center space-x-3">
+                    <i class="fas fa-shopping-cart text-gray-600 text-lg"></i>
+                    <i class="fas fa-bell text-gray-600 text-lg"></i>
+                    <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
+                        <i class="fas fa-user text-gray-600 text-sm"></i>
+                    </div>
+                    <a href="/logout" class="text-gray-600 hover:text-blue-600 font-medium transition-colors">Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
 
 <div class="max-w-3xl mx-auto p-8">
     <h1 class="text-4xl font-bold text-yellow-500 text-center mb-8">My Profile</h1>
 
+    <div class="flex justify-end mb-6">
+        <button type="button"
+                onclick="openPasswordModal()"
+                class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded font-medium mb-6 ">
+            Change Password
+        </button>
+    </div>
     <form th:object="${user}" method="post" action="/profile/update"
           class="bg-white p-8 rounded shadow border border-blue-300">
 
@@ -78,11 +121,7 @@
                     class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded font-medium">
                 Save
             </button>
-            <button type="button"
-                    onclick="openPasswordModal()"
-                    class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded font-medium">
-                Change Password
-            </button>
+
         </div>
     </form>
 </div>

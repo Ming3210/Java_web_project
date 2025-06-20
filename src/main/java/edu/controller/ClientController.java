@@ -272,7 +272,6 @@ public class ClientController {
                 currentUser.setDob(profileDTO.getDob());
             }
 
-
             boolean updated = clientService.updateProfile(currentUser);
             if (updated) {
                 session.setAttribute("user", currentUser);
@@ -287,7 +286,6 @@ public class ClientController {
         return "redirect:/profile";
     }
 
-
     @PostMapping("/profile/change-password")
     public String changePassword(@RequestParam String currentPassword,
                                  @RequestParam String newPassword,
@@ -297,26 +295,44 @@ public class ClientController {
 
         User currentUser = (User) session.getAttribute("user");
         if (currentUser == null) {
-            redirectAttributes.addFlashAttribute("error", "Session expired. Please login again.");
+            redirectAttributes.addFlashAttribute("passwordError", "Session expired. Please login again.");
             return "redirect:/login";
         }
 
-        if (!newPassword.equals(confirmPassword)) {
-            redirectAttributes.addFlashAttribute("error", "New passwords do not match.");
+        // Server-side validation
+        if (currentPassword == null || currentPassword.trim().isEmpty()) {
+            redirectAttributes.addFlashAttribute("passwordError", "Current password is required.");
+            return "redirect:/profile";
+        }
+
+        if (newPassword == null || newPassword.trim().isEmpty()) {
+            redirectAttributes.addFlashAttribute("passwordError", "New password is required.");
+            return "redirect:/profile";
+        }
+
+        if (confirmPassword == null || confirmPassword.trim().isEmpty()) {
+            redirectAttributes.addFlashAttribute("passwordError", "Confirm password is required.");
             return "redirect:/profile";
         }
 
         if (newPassword.length() < 6) {
-            redirectAttributes.addFlashAttribute("error", "New password must be at least 6 characters long.");
+            redirectAttributes.addFlashAttribute("passwordError", "New password must be at least 6 characters long.");
+            return "redirect:/profile";
+        }
+
+        if (!newPassword.equals(confirmPassword)) {
+            redirectAttributes.addFlashAttribute("passwordError", "New password and confirm password do not match.");
             return "redirect:/profile";
         }
 
         if (!BCrypt.checkpw(currentPassword, currentUser.getPassword())) {
-            return "redirect:/profile?passwordError=incorrect";
+            redirectAttributes.addFlashAttribute("passwordError", "Current password is incorrect.");
+            return "redirect:/profile";
         }
 
-        if (!newPassword.equals(confirmPassword)) {
-            return "redirect:/profile?passwordError=mismatch";
+        if (currentPassword.equals(newPassword)) {
+            redirectAttributes.addFlashAttribute("passwordError", "New password must be different from current password.");
+            return "redirect:/profile";
         }
 
         try {
@@ -327,14 +343,16 @@ public class ClientController {
 
             if (updated) {
                 session.setAttribute("user", currentUser);
-                redirectAttributes.addFlashAttribute("success", "Password changed successfully.");
+                redirectAttributes.addFlashAttribute("passwordSuccess", "Password changed successfully.");
             } else {
-                redirectAttributes.addFlashAttribute("error", "Failed to change password. Please try again.");
+                redirectAttributes.addFlashAttribute("passwordError", "Failed to change password. Please try again.");
             }
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "An error occurred while changing password. Please try again.");
+            redirectAttributes.addFlashAttribute("passwordError", "An error occurred while changing password. Please try again.");
             e.printStackTrace();
         }
+
         return "redirect:/profile";
     }
 }
+
