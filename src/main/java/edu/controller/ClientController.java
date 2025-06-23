@@ -1,9 +1,6 @@
 package edu.controller;
 
-import edu.dto.CourseDTO;
-import edu.dto.EnrollmentDTO;
-import edu.dto.ProfileDTO;
-import edu.dto.UserDTO;
+import edu.dto.*;
 import edu.entity.Course;
 import edu.entity.Enrollment;
 import edu.entity.User;
@@ -18,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpSession;
+import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -231,7 +229,9 @@ public class ClientController {
         if (currentUser == null) {
             return "redirect:/login";
         }
-
+        if (!model.containsAttribute("passwordDTO")) {
+            model.addAttribute("passwordDTO", new PasswordDTO());
+        }
         ProfileDTO profileDTO = new ProfileDTO();
         profileDTO.setId(currentUser.getId());
         profileDTO.setUsername(currentUser.getUsername());
@@ -272,6 +272,7 @@ public class ClientController {
                 currentUser.setDob(profileDTO.getDob());
             }
 
+
             boolean updated = clientService.updateProfile(currentUser);
             if (updated) {
                 session.setAttribute("user", currentUser);
@@ -286,73 +287,74 @@ public class ClientController {
         return "redirect:/profile";
     }
 
+
     @PostMapping("/profile/change-password")
-    public String changePassword(@RequestParam String currentPassword,
-                                 @RequestParam String newPassword,
-                                 @RequestParam String confirmPassword,
+    @Transactional
+    public String changePassword(@Valid @ModelAttribute("passwordDTO") PasswordDTO passwordDTO,
+                                 BindingResult bindingResult,
                                  HttpSession session,
-                                 RedirectAttributes redirectAttributes) {
+                                 RedirectAttributes redirectAttributes,
+                                 Model model) {
 
         User currentUser = (User) session.getAttribute("user");
         if (currentUser == null) {
-            redirectAttributes.addFlashAttribute("passwordError", "Session expired. Please login again.");
+            redirectAttributes.addFlashAttribute("error", "Session expired. Please login again.");
             return "redirect:/login";
         }
 
-        // Server-side validation
-        if (currentPassword == null || currentPassword.trim().isEmpty()) {
-            redirectAttributes.addFlashAttribute("passwordError", "Current password is required.");
+        // Custom validations
+        boolean hasErrors = false;
+
+        // Validate password length
+        if (passwordDTO.getNewPassword() != null && passwordDTO.getNewPassword().length() < 6) {
+            bindingResult.rejectValue("newPassword", "error.newPassword", "Password must be at least 6 characters long");
+            hasErrors = true;
+        }
+
+        // Verify current password only if not empty
+        if (!bindingResult.hasFieldErrors("currentPassword") &&
+                passwordDTO.getCurrentPassword() != null &&
+                !passwordDTO.getCurrentPassword().trim().isEmpty()) {
+
+            if (!BCrypt.checkpw(passwordDTO.getCurrentPassword(), currentUser.getPassword())) {
+                bindingResult.rejectValue("currentPassword", "error.currentPassword", "Current password is incorrect");
+                hasErrors = true;
+            }
+        }
+
+        // Kiểm tra validation errors hoặc custom errors
+        if (bindingResult.hasErrors() || hasErrors) {
+            // For security, only preserve new password and confirm password if you really need to
+            // Generally NOT recommended for password fields
+            PasswordDTO preservedDTO = new PasswordDTO();
+            preservedDTO.setCurrentPassword(""); // Never preserve current password
+            preservedDTO.setNewPassword(passwordDTO.getNewPassword()); // Preserve if needed
+            preservedDTO.setConfirmPassword(passwordDTO.getConfirmPassword()); // Preserve if needed
+
+            redirectAttributes.addFlashAttribute("passwordDTO", preservedDTO);
+            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.passwordDTO", bindingResult);
+            redirectAttributes.addFlashAttribute("showPasswordModal", true);
             return "redirect:/profile";
         }
 
-        if (newPassword == null || newPassword.trim().isEmpty()) {
-            redirectAttributes.addFlashAttribute("passwordError", "New password is required.");
-            return "redirect:/profile";
-        }
-
-        if (confirmPassword == null || confirmPassword.trim().isEmpty()) {
-            redirectAttributes.addFlashAttribute("passwordError", "Confirm password is required.");
-            return "redirect:/profile";
-        }
-
-        if (newPassword.length() < 6) {
-            redirectAttributes.addFlashAttribute("passwordError", "New password must be at least 6 characters long.");
-            return "redirect:/profile";
-        }
-
-        if (!newPassword.equals(confirmPassword)) {
-            redirectAttributes.addFlashAttribute("passwordError", "New password and confirm password do not match.");
-            return "redirect:/profile";
-        }
-
-        if (!BCrypt.checkpw(currentPassword, currentUser.getPassword())) {
-            redirectAttributes.addFlashAttribute("passwordError", "Current password is incorrect.");
-            return "redirect:/profile";
-        }
-
-        if (currentPassword.equals(newPassword)) {
-            redirectAttributes.addFlashAttribute("passwordError", "New password must be different from current password.");
-            return "redirect:/profile";
-        }
-
+        // Update password
         try {
-            String hashedPassword = BCrypt.hashpw(newPassword, BCrypt.gensalt());
+            String hashedPassword = BCrypt.hashpw(passwordDTO.getNewPassword(), BCrypt.gensalt());
             currentUser.setPassword(hashedPassword);
 
-            boolean updated = clientService.updateProfile(currentUser);
+            boolean updated = clientService.updatePassword(currentUser.getId(), hashedPassword);
 
             if (updated) {
                 session.setAttribute("user", currentUser);
-                redirectAttributes.addFlashAttribute("passwordSuccess", "Password changed successfully.");
+                redirectAttributes.addFlashAttribute("success", "Password changed successfully.");
             } else {
-                redirectAttributes.addFlashAttribute("passwordError", "Failed to change password. Please try again.");
+                redirectAttributes.addFlashAttribute("error", "Failed to change password. Please try again.");
             }
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("passwordError", "An error occurred while changing password. Please try again.");
+            redirectAttributes.addFlashAttribute("error", "An error occurred while changing password. Please try again.");
             e.printStackTrace();
         }
 
         return "redirect:/profile";
     }
 }
-

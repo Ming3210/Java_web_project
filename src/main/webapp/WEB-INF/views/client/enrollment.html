@@ -34,7 +34,7 @@
                     </div>
                     <i class="fas fa-bell text-gray-600 text-lg"></i>
                     <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
-                        <i class="fas fa-user text-gray-600 text-sm"></i>
+                        <img th:src="${session.user.getAvatar()}" alt="">
                     </div>
                     <a class="text-gray-600 hover:text-blue-600 font-medium transition-colors" href="/logout">Logout</a>
                 </div>
@@ -109,10 +109,10 @@
                 </td>
                 <td class="px-6 py-4 text-sm text-gray-900" th:text="${enrollment.course.createdAt}"></td>
                 <td class="px-6 py-4">
-                  <span th:classappend="${enrollment.status.name() == 'WAITING' ? '1 inline-flex items-center px-3 py-1 rounded-full text-xs font-medium  text-yellow-800' :
-                                     (enrollment.status.name() == 'CONFIRM' ? '2 inline-flex items-center px-3 py-1 rounded-full text-xs font-medium  text-green-800' :
-                                     (enrollment.status.name() == 'DENIED' ? '4 inline-flex items-center px-3 py-1 rounded-full text-xs font-medium  text-red-800' :
-                                     (enrollment.status.name() == 'CANCEL' ? ' 7 inline-flex items-center px-3 py-1 rounded-full text-xs font-medium  text-gray-800' :
+                  <span th:classappend="${enrollment.status.name() == 'WAITING' ? 'inline-flex items-center px-3 py-1 text-[#FFD500] rounded-full text-xs font-medium  ' :
+                                     (enrollment.status.name() == 'CONFIRM' ? 'inline-flex items-center px-3 py-1 rounded-full text-[#12B347] text-xs font-medium ' :
+                                     (enrollment.status.name() == 'DENIED' ? 'inline-flex items-center px-3 py-1 rounded-full text-[#FF0909] text-xs font-medium  ' :
+                                     (enrollment.status.name() == 'CANCEL' ? ' inline-flex items-center px-3 py-1 text-[#FF0909] rounded-full text-xs font-medium  ' :
                                      '77 inline-flex items-center px-3 py-1 rounded-full text-xs font-medium')))}"
                         th:text="${enrollment.status}">
 

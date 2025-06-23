@@ -144,5 +144,43 @@ public class ClientRepositoryImp implements ClientRepository{
         }
     }
 
+    @Override
+    public User findUserById(int userId) {
+        Session session = sessionFactory.openSession();
+        try {
+            return session.get(User.class, userId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        } finally {
+            session.close();
+        }
+    }
+
+    @Override
+    public boolean updatePassword(int userId, String newPassword) {
+        Session session = sessionFactory.openSession();
+        try {
+            session.beginTransaction();
+            User user = session.get(User.class, userId);
+            if (user != null) {
+                user.setPassword(newPassword);
+                session.update(user);
+                session.getTransaction().commit();
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            if (session.getTransaction() != null) {
+                session.getTransaction().rollback();
+            }
+            e.printStackTrace();
+            return false;
+        } finally {
+            session.close();
+        }
+    }
+
 
 }

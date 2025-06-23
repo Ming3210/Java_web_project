@@ -11,5 +11,7 @@ public interface ClientService {
     int countEnrollmentsByUserIdAndKeyword(int userId, String keyword, String status);
     boolean cancelEnrollment(int userId, Enrollment enrollment);
     boolean updateProfile(User user);
+    User findUserById(int userId);
+    boolean updatePassword(int userId, String newPassword);
 
 }

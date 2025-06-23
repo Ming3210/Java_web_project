@@ -35,5 +35,15 @@ public class ClientServiceImp implements ClientService{
         return clientRepository.updateProfile(user);
     }
 
+    @Override
+    public User findUserById(int userId) {
+        return clientRepository.findUserById(userId);
+    }
+
+    @Override
+    public boolean updatePassword(int userId, String newPassword) {
+        return clientRepository.updatePassword(userId, newPassword);
+    }
+
 
 }
