@@ -51,6 +51,8 @@
             <label for="imageFile" class="block text-gray-700 font-medium mb-1">Course Image</label>
             <input id="imageFile" type="file" accept="image/*" th:field="*{imageFile}"
                    class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+            <div th:if="${#fields.hasErrors('imageFile')}" th:errors="*{imageFile}" class="text-red-500 text-sm"></div>
+
             <div th:if="*{image != null}" class="mt-2">
                 <img th:src="*{image}" alt="Course Image" class="w-20 h-20 object-cover rounded">
             </div>

@@ -11,4 +11,7 @@ public class LoginDTO {
 
     @NotBlank(message = "Password is required")
     private String password;
+
+    private boolean rememberMe; 
+
 }

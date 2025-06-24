@@ -244,12 +244,19 @@ public class AdminController {
 
 
 
-
     @PostMapping("/admin/courses/save")
-    public String saveCourse(@Valid @ModelAttribute("course") CourseDTO courseDTO, BindingResult result, Model model, RedirectAttributes redirectAttributes) {
+    public String saveCourse(@Valid @ModelAttribute("course") CourseDTO courseDTO,
+                             BindingResult result, Model model, RedirectAttributes redirectAttributes) {
         System.out.println("=== SAVE COURSE DEBUG ===");
         System.out.println("Course ID: " + courseDTO.getId());
         System.out.println("Course Name: " + courseDTO.getName());
+
+        boolean isUpdate = (courseDTO.getId() != null && courseDTO.getId() > 0);
+
+        if (!isUpdate && (courseDTO.getImageFile() == null || courseDTO.getImageFile().isEmpty())) {
+            result.rejectValue("imageFile", "required", "Image is required for new course");
+        }
+
         if (result.hasErrors()) {
             redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.course", result);
             redirectAttributes.addFlashAttribute("course", courseDTO);
@@ -257,39 +264,75 @@ public class AdminController {
             model.addAttribute("openModal", true);
             return "redirect:/admin/courses";
         }
+
         String imageUrl = null;
+
+        if (isUpdate) {
+            Course existingCourse = adminService.getCourseById(courseDTO.getId());
+            if (existingCourse != null) {
+                imageUrl = existingCourse.getImage();
+            }
+        }
+
         if (courseDTO.getImageFile() != null && !courseDTO.getImageFile().isEmpty()) {
             try {
                 Map<String, Object> uploadParams = new HashMap<>();
                 uploadParams.put("folder", "courses");
                 Map uploadResult = cloudinary.uploader().upload(
-                    courseDTO.getImageFile().getBytes(), uploadParams
+                        courseDTO.getImageFile().getBytes(), uploadParams
                 );
                 imageUrl = uploadResult.get("secure_url").toString();
-                System.out.println("Image uploaded: " + imageUrl);
+                System.out.println("New image uploaded: " + imageUrl);
             } catch (Exception e) {
                 System.err.println("Error uploading image: " + e.getMessage());
                 e.printStackTrace();
+                redirectAttributes.addFlashAttribute("uploadError", "Failed to upload image. Please try again.");
+                redirectAttributes.addFlashAttribute("course", courseDTO);
+                redirectAttributes.addFlashAttribute("openModal", true);
+                return "redirect:/admin/courses";
             }
         }
+
         Course course = new Course();
         course.setName(courseDTO.getName());
         course.setDuration(courseDTO.getDuration());
         course.setInstructor(courseDTO.getInstructor());
-
         course.setImage(imageUrl);
         course.setStatus(true);
-        course.setCreatedAt(LocalDate.now());
-        try {
-            adminService.saveCourse(course);
-            System.out.println("Course saved successfully");
-        } catch (Exception e) {
-            System.err.println("Error saving course: " + e.getMessage());
-            e.printStackTrace();
+
+        if (isUpdate) {
+            course.setId(courseDTO.getId());
+            Course existingCourse = adminService.getCourseById(courseDTO.getId());
+            if (existingCourse != null) {
+                course.setCreatedAt(existingCourse.getCreatedAt());
+            }
+            try {
+                adminService.editCourse(course);
+                redirectAttributes.addFlashAttribute("successUpdate", true);
+                redirectAttributes.addFlashAttribute("successMessage", "Course updated successfully!");
+
+            } catch (Exception e) {
+                System.err.println("Error updating course: " + e.getMessage());
+                e.printStackTrace();
+                redirectAttributes.addFlashAttribute("errorMessage", "Failed to update course. Please try again.");
+            }
+        } else {
+            course.setCreatedAt(LocalDate.now());
+            try {
+                adminService.saveCourse(course);
+                System.out.println("Course created successfully");
+                redirectAttributes.addFlashAttribute("successMessage", "Course created successfully!");
+                redirectAttributes.addFlashAttribute("successUpdate", true);
+
+            } catch (Exception e) {
+                System.err.println("Error creating course: " + e.getMessage());
+                e.printStackTrace();
+                redirectAttributes.addFlashAttribute("errorMessage", "Failed to create course. Please try again.");
+            }
         }
+
         return "redirect:/admin/courses";
     }
-
 
 
     @GetMapping("/admin/courses/edit/{id}")
@@ -313,7 +356,8 @@ public class AdminController {
 
 
     @PostMapping("/admin/courses/update")
-    public String updateCourse(@Valid @ModelAttribute("course") CourseDTO courseDTO, BindingResult result, Model model) {
+    public String updateCourse(@Valid @ModelAttribute("course") CourseDTO courseDTO,
+                               BindingResult result, Model model) {
         System.out.println("=== UPDATE COURSE DEBUG ===");
         System.out.println("Course ID: " + courseDTO.getId());
         System.out.println("Course Name: " + courseDTO.getName());
@@ -337,8 +381,10 @@ public class AdminController {
             return "redirect:/admin/courses";
         }
 
+        // Giữ lại URL ảnh cũ làm mặc định
         String imageUrl = existingCourse.getImage();
 
+        // Chỉ upload ảnh mới nếu user chọn file mới
         if (courseDTO.getImageFile() != null && !courseDTO.getImageFile().isEmpty()) {
             try {
                 Map<String, Object> uploadParams = new HashMap<>();
@@ -365,7 +411,8 @@ public class AdminController {
         course.setName(courseDTO.getName());
         course.setDuration(courseDTO.getDuration());
         course.setInstructor(courseDTO.getInstructor());
-        course.setImage(imageUrl);
+        course.setStatus(true);
+        course.setImage(imageUrl); // Sử dụng URL cũ nếu không có file mới
         course.setCreatedAt(existingCourse.getCreatedAt());
 
         try {

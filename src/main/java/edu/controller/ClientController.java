@@ -45,23 +45,39 @@ public class ClientController {
                        @RequestParam(defaultValue = "asc") String order,
                        @RequestParam(defaultValue = "ACTIVE") String status,
                        @RequestParam(required = false) String keyword) {
+
         User user = (User) session.getAttribute("user");
-        Set<Integer> enrolledCourseIds = new HashSet<>();
+        Set<Integer> enrolledCourseIds;
 
         if (user != null) {
             List<Enrollment> enrollments = adminService.getEnrollmentsByUserId(user.getId());
             enrolledCourseIds = enrollments.stream()
                     .map(e -> e.getCourse().getId())
                     .collect(Collectors.toSet());
+        } else {
+            enrolledCourseIds = new HashSet<>();
         }
 
-        int totalCourses = adminService.countCoursesByStatusAndKeyword(status, keyword);
+        // Lấy toàn bộ danh sách course (không phân trang)
+        List<Course> allCourses = clientService.getAllCourses(sortBy, order, keyword);
+
+        // Lọc course: chỉ giữ course ACTIVE hoặc đã đăng ký
+        List<Course> filteredCourses = allCourses.stream()
+                .filter(course -> course.isStatus() || enrolledCourseIds.contains(course.getId()))
+                .collect(Collectors.toList());
+
+        // Tổng số khóa học sau khi lọc
+        int totalCourses = filteredCourses.size();
         int totalPages = (int) Math.ceil((double) totalCourses / size);
 
-        List<Course> courses = clientService.paginateCourses(page, size, sortBy, order, status, keyword);
+        // Phân trang bằng Java
+        int fromIndex = Math.max((page - 1) * size, 0);
+        int toIndex = Math.min(fromIndex + size, totalCourses);
+        List<Course> pagedCourses = filteredCourses.subList(fromIndex, toIndex);
 
+        // Convert sang DTO
         List<CourseDTO> courseDTOS = new ArrayList<>();
-        for (Course course : courses) {
+        for (Course course : pagedCourses) {
             CourseDTO courseDTO = new CourseDTO();
             courseDTO.setId(course.getId());
             courseDTO.setName(course.getName());
@@ -69,9 +85,11 @@ public class ClientController {
             courseDTO.setInstructor(course.getInstructor());
             courseDTO.setImage(course.getImage());
             courseDTO.setCreatedAt(course.getCreatedAt());
+            courseDTO.setStatus(course.isStatus());
             courseDTOS.add(courseDTO);
         }
 
+        // Gửi dữ liệu ra view
         model.addAttribute("courses", courseDTOS);
         model.addAttribute("enrolledCourseIds", enrolledCourseIds);
         model.addAttribute("totalCourses", totalCourses);
@@ -93,6 +111,7 @@ public class ClientController {
         return "client/home";
     }
 
+
     @PostMapping("/enroll")
     public String enroll(@RequestParam("courseId") int courseId,
                          HttpSession session,
@@ -110,6 +129,7 @@ public class ClientController {
 
         if (success) {
             redirectAttributes.addFlashAttribute("success", "You have successfully enrolled in the course.");
+            redirectAttributes.addFlashAttribute("successEnrollment", true);
         } else {
             // More specific error message
             redirectAttributes.addFlashAttribute("error",
@@ -167,30 +187,6 @@ public class ClientController {
     }
 
 
-//    @PostMapping("/enrollment/cancel/{id")
-//    public String cancelEnrollment(@RequestParam("id") int enrollmentId,
-//                                   HttpSession session,
-//                                   RedirectAttributes redirectAttributes) {
-//        User user = (User) session.getAttribute("user");
-//        if (user == null) {
-//            redirectAttributes.addFlashAttribute("error", "Please login to cancel enrollment.");
-//            return "redirect:/login";
-//        }
-//        List<Enrollment> enrollments = adminService.getEnrollmentsByUserId(user.getId());
-//        Enrollment enrollment = enrollments.stream()
-//                .filter(e -> e.getId() == enrollmentId)
-//                .findFirst()
-//                .orElse(null);
-//
-//        boolean success = clientService.cancelEnrollment(user.getId(), enrollment);
-//        if (success) {
-//            redirectAttributes.addFlashAttribute("success", "Enrollment cancelled successfully.");
-//        } else {
-//            redirectAttributes.addFlashAttribute("error", "Failed to cancel enrollment. Please try again.");
-//        }
-//
-//        return "redirect:/enrollment";
-//    }
 
     @GetMapping("/enrollment/cancel/{id}")
     public String cancelEnrollment(@PathVariable("id") int enrollmentId,
@@ -277,6 +273,8 @@ public class ClientController {
             if (updated) {
                 session.setAttribute("user", currentUser);
                 redirectAttributes.addFlashAttribute("success", "Profile updated successfully.");
+                redirectAttributes.addFlashAttribute("successUpdate", true);
+
             } else {
                 redirectAttributes.addFlashAttribute("error", "Failed to update profile. Please try again.");
             }
@@ -347,6 +345,8 @@ public class ClientController {
             if (updated) {
                 session.setAttribute("user", currentUser);
                 redirectAttributes.addFlashAttribute("success", "Password changed successfully.");
+                redirectAttributes.addFlashAttribute("successUpdate", true);
+
             } else {
                 redirectAttributes.addFlashAttribute("error", "Failed to change password. Please try again.");
             }

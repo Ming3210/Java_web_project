@@ -2,7 +2,9 @@ package edu.config;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+import edu.utils.RememberMeInterceptor;
 import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -11,6 +13,7 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import org.thymeleaf.spring5.dialect.SpringStandardDialect;
@@ -26,6 +29,8 @@ import java.util.Set;
 @ComponentScan(basePackages = "edu")
 public class AppConfig implements WebMvcConfigurer {
 
+    @Autowired
+    private RememberMeInterceptor rememberMeInterceptor;
 
     private static final String HOST_NAME = "djppquc7s";
     private static final String API_KEY = "795681177339359";
@@ -98,5 +103,11 @@ public class AppConfig implements WebMvcConfigurer {
     @Bean
     public javax.validation.Validator validator() {
         return new LocalValidatorFactoryBean();
+    }
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(rememberMeInterceptor)
+                .excludePathPatterns("/login", "/register", "/css/**", "/js/**", "/images/**");
     }
 }

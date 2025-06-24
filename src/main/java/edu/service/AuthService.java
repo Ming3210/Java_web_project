@@ -9,4 +9,6 @@ public interface AuthService {
 
     boolean existsByEmail(String email);
 
+    User findUserByEmail(String email);
+
 }

@@ -6,6 +6,9 @@
     <title>Course Manager</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+
 </head>
 <body class="bg-gray-50 min-h-screen" th:data-open-modal="${openModal}">
 <div class="container mx-auto px-4 py-6">
@@ -192,5 +195,36 @@
         });
     });
 </script>
+
+
 </body>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script th:if="${successUpdate}">
+    Swal.fire({
+            toast: true,
+            title: "Course Successfully Update",
+            position: "bottom-end",
+            showConfirmButton: false,
+            timer: 2500,
+            background: "#c7ffd3",
+            color: "#106b21",
+            backdrop: false,
+            showClass: {
+                popup: `
+        animate__animated
+        animate__backInRight
+        animate__faster
+      `
+            },
+            hideClass: {
+                popup: `
+        animate__animated
+        animate__backOutLeft
+        animate__faster
+      `
+            }
+        }
+    );
+</script>
 </html>

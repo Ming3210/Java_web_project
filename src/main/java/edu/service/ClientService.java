@@ -13,5 +13,6 @@ public interface ClientService {
     boolean updateProfile(User user);
     User findUserById(int userId);
     boolean updatePassword(int userId, String newPassword);
+    List<Course> getAllCourses(String sortBy, String order, String keyword);
 
 }

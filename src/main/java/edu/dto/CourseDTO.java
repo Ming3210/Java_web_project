@@ -1,5 +1,6 @@
 package edu.dto;
 
+import edu.validation.NotEmptyMultipartFile;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -40,5 +41,6 @@ public class CourseDTO {
 
     private int totalStudents;
 
+//    @NotEmptyMultipartFile(message = "Image is required")
     private MultipartFile imageFile;
 }

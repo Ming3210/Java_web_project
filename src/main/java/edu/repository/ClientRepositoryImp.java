@@ -182,5 +182,27 @@ public class ClientRepositoryImp implements ClientRepository{
         }
     }
 
+    @Override
+    public List<Course> getAllCourses(String sortBy, String order, String keyword) {
+        try (Session session = sessionFactory.openSession()) {
+            String hql = "FROM Course WHERE 1=1";
+
+            if (keyword != null && !keyword.trim().isEmpty()) {
+                hql += " AND lower(name) LIKE :keyword";
+            }
+
+            hql += " ORDER BY " + sortBy + " " + order;
+
+            Query<Course> query = session.createQuery(hql, Course.class);
+
+            if (keyword != null && !keyword.trim().isEmpty()) {
+                query.setParameter("keyword", "%" + keyword.toLowerCase() + "%");
+            }
+
+            return query.getResultList();
+        }
+    }
+
+
 
 }

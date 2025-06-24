@@ -1,5 +1,6 @@
 package edu.dto;
 
+import edu.validation.UniqueEmail;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,6 +26,7 @@ public class UserDTO {
 
     @NotBlank(message = "Email is required")
     @Email(message = "Email should be valid")
+    @UniqueEmail
     private String email;
 
     private String role;

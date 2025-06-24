@@ -9,5 +9,6 @@ public interface AuthRepository {
 
     boolean existsByEmail(String email);
 
+    User findUserByEmail(String email);
 
 }

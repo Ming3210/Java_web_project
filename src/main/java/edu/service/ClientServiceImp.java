@@ -45,5 +45,10 @@ public class ClientServiceImp implements ClientService{
         return clientRepository.updatePassword(userId, newPassword);
     }
 
+    @Override
+    public List<Course> getAllCourses(String sortBy, String order, String keyword) {
+        return clientRepository.getAllCourses(sortBy, order, keyword);
+    }
+
 
 }
